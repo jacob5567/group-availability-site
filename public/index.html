@@ -43,9 +43,11 @@
     <button type="button" id="leave" class="link">Start over</button>
   </header>
 
-  <nav class="tabs" role="tablist">
-    <button type="button" id="tab-mine" class="tab" role="tab" aria-selected="true">My hours</button>
-    <button type="button" id="tab-all" class="tab" role="tab" aria-selected="false">Overlap</button>
+  <div class="tabs-row">
+    <nav class="tabs" role="tablist">
+      <button type="button" id="tab-mine" class="tab" role="tab" aria-selected="true">My hours</button>
+      <button type="button" id="tab-all" class="tab" role="tab" aria-selected="false">Overlap</button>
+    </nav>
     <label class="switch-wrap">
       <span class="switch">
         <input type="checkbox" id="format-toggle">
@@ -53,7 +55,7 @@
       </span>
       12-hour clock
     </label>
-  </nav>
+  </div>
 
   <div id="pane-mine">
     <form id="me-form" class="me-form">

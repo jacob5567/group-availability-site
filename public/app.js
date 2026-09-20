@@ -301,12 +301,18 @@ function mergeLocal(people, me) {
   return all.sort((a, b) => a.n.localeCompare(b.n));
 }
 
+// Bumped on every call so a slower, older request can tell it's been
+// superseded and not overwrite a newer navigation with stale data.
+let openToken = 0;
+
 async function openGroup(code) {
+  const token = ++openToken;
   showError('group-error', '');
   let group;
   try {
     group = await api(`/group/${code}`);
   } catch (e) {
+    if (token !== openToken) return;
     show('home');
     location.hash = '';
     showError('home-error', e.message === 'group not found'
@@ -314,6 +320,7 @@ async function openGroup(code) {
       : e.message);
     return;
   }
+  if (token !== openToken) return;
 
   state.code = code;
   state.me = loadLocal(code);

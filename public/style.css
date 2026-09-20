@@ -160,13 +160,17 @@ button:disabled { opacity: 0.55; cursor: default; }
   word-break: break-all;
 }
 
-.tabs {
+.tabs-row {
   display: flex;
   align-items: center;
-  gap: 4px;
   flex-wrap: wrap;
   border-bottom: 1px solid var(--line);
   margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
 }
 .tab {
   background: none;
@@ -186,6 +190,7 @@ button:disabled { opacity: 0.55; cursor: default; }
   gap: 8px;
   margin-left: auto;
   padding: 10px 4px;
+  margin-bottom: -1px;
   color: var(--muted);
   font-size: 0.85rem;
   cursor: pointer;
