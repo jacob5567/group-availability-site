@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>When Are We Free</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<main>
+
+<section id="view-home" hidden>
+  <h1>When are we free?</h1>
+  <p class="lede">Make a group, share the code, everyone paints the hours they're free.
+    No accounts. Everything is deleted after 60 days of no use.</p>
+
+  <form id="create-form">
+    <label for="create-name">Group name <span class="opt">(optional)</span></label>
+    <input id="create-name" type="text" maxlength="40" placeholder="Thursday game night" autocomplete="off">
+    <button type="submit" class="primary">Create a group</button>
+  </form>
+
+  <div class="divider"><span>or</span></div>
+
+  <form id="join-form">
+    <label for="join-code">Join with a code</label>
+    <input id="join-code" type="text" maxlength="6" placeholder="ABC123" autocomplete="off"
+           autocapitalize="characters" spellcheck="false" class="code-input">
+    <button type="submit">Join</button>
+  </form>
+
+  <p id="home-error" class="error" hidden></p>
+</section>
+
+<section id="view-group" hidden>
+  <header class="group-head">
+    <div>
+      <h1 id="group-name">Group</h1>
+      <p class="code-line">Code <button type="button" id="code-copy" class="code-chip" title="Copy the share link"><span id="group-code">------</span></button></p>
+    </div>
+    <button type="button" id="leave" class="link">Start over</button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" id="tab-mine" class="tab" role="tab" aria-selected="true">My hours</button>
+    <button type="button" id="tab-all" class="tab" role="tab" aria-selected="false">Overlap</button>
+  </nav>
+
+  <div id="pane-mine">
+    <form id="me-form" class="me-form">
+      <label for="me-name">Your name</label>
+      <input id="me-name" type="text" maxlength="40" placeholder="Your name" autocomplete="name" required>
+    </form>
+    <p class="hint">Drag across the grid to mark when you're free. Times are shown in
+      <strong id="tz-mine"></strong>.</p>
+    <div id="grid-mine" class="grid-wrap"></div>
+    <div class="actions">
+      <button type="button" id="save" class="primary">Save my hours</button>
+      <button type="button" id="clear" class="link">Clear all</button>
+      <button type="button" id="remove" class="link danger" hidden>Remove me</button>
+      <span id="save-status" class="status" role="status"></span>
+    </div>
+  </div>
+
+  <div id="pane-all" hidden>
+    <p class="hint"><span id="people-summary">No one has filled this in yet.</span>
+      Times are shown in <strong id="tz-all"></strong>.</p>
+    <div id="grid-all" class="grid-wrap"></div>
+    <div id="best"></div>
+  </div>
+
+  <p id="group-error" class="error" hidden></p>
+</section>
+
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
