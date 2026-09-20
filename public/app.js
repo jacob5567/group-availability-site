@@ -425,14 +425,46 @@ $('leave').addEventListener('click', () => {
   location.hash = '';
 });
 
+// Feedback goes in the header, next to the code itself, because the code chip
+// is visible on both tabs but #save-status lives inside the "My hours" pane
+// and is hidden whenever someone's looking at the Overlap tab — where anyone
+// returning to share the link is most likely to be.
+let copyStatusTimer = null;
+function showCopyStatus(text, ms) {
+  const status = $('copy-status');
+  status.textContent = text;
+  clearTimeout(copyStatusTimer);
+  copyStatusTimer = setTimeout(() => { status.textContent = ''; }, ms);
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-1000px';
+  ta.setAttribute('readonly', '');
+  document.body.appendChild(ta);
+  ta.select();
+  let copied = false;
+  try {
+    copied = document.execCommand('copy');
+  } catch {
+    copied = false;
+  }
+  document.body.removeChild(ta);
+  return copied;
+}
+
 $('code-copy').addEventListener('click', async () => {
   const link = `${location.origin}${location.pathname}#/${state.code}`;
   try {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error('no clipboard api');
     await navigator.clipboard.writeText(link);
-    $('code-copy').title = 'Link copied';
-    $('save-status').textContent = 'Share link copied.';
+    showCopyStatus('Link copied.', 2500);
   } catch {
-    $('save-status').textContent = link;
+    // Insecure context, permission denied, or an old browser: fall back to a
+    // manual copy, and if even that fails, show the link so it can be copied by hand.
+    showCopyStatus(fallbackCopy(link) ? 'Link copied.' : link, 6000);
   }
 });
 
