@@ -73,7 +73,13 @@ The overlap view shades each hour by how many people are free. Below it, runs ar
 A run is a contiguous stretch where *the same set of people* is free — not merely the same count —
 so "without Sam" is always accurate.
 
+The 12h/24h switch is a per-browser display preference (its own `localStorage` key, separate from
+any group's data) — it only changes how hours are labelled, never what's stored.
+
 ## Testing
+
+`npm test` runs the unit tests (slot encoding, timezone conversion, run formatting, overlap logic)
+against `public/lib.js` with nothing but Node itself — no browser, no dependencies.
 
 `?tz=Asia/Tokyo` overrides the detected timezone. This is what makes the conversion testable from a
 single browser: create a group, save some hours, then reopen the same link with the override and

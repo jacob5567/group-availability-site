@@ -26,6 +26,26 @@ function tzLabel(tz, date = new Date()) {
   }
 }
 
+// 12h/24h is a display preference, not per-group data, so it lives under its
+// own localStorage key rather than inside a group record.
+function loadUse12() {
+  try {
+    return localStorage.getItem('ga:format') === '12';
+  } catch {
+    return false;
+  }
+}
+
+function saveUse12(value) {
+  try {
+    localStorage.setItem('ga:format', value ? '12' : '24');
+  } catch {
+    // ignore
+  }
+}
+
+let use12 = loadUse12();
+
 /* ---------- api ---------- */
 
 async function api(path, options = {}) {
@@ -84,9 +104,10 @@ function newId() {
 
 /* ---------- grid ---------- */
 
-function buildGrid(container, { interactive }) {
+function buildGrid(container, { interactive, use12: initialUse12 = false }) {
   const grid = document.createElement('div');
   grid.className = 'grid';
+  let labelFormat = initialUse12;
 
   const corner = document.createElement('div');
   corner.className = 'head corner';
@@ -100,10 +121,12 @@ function buildGrid(container, { interactive }) {
   }
 
   const cells = new Array(SLOTS);
+  const hourLabels = new Array(24);
   for (let hour = 0; hour < 24; hour++) {
     const label = document.createElement('div');
     label.className = 'hour';
-    label.textContent = hh(hour);
+    label.textContent = formatHourLabel(hour, labelFormat);
+    hourLabels[hour] = label;
     grid.appendChild(label);
 
     for (let day = 0; day < 7; day++) {
@@ -176,8 +199,12 @@ function buildGrid(container, { interactive }) {
         // "all of us" no matter how many people there are.
         const level = count === 0 ? 0 : count >= total ? 5 : Math.max(1, Math.ceil((count / total) * 4));
         cells[i].dataset.level = String(level);
-        cells[i].title = count ? `${formatRun(i, 1)} — ${count} of ${total}` : '';
+        cells[i].title = count ? `${formatRun(i, 1, labelFormat)} — ${count} of ${total}` : '';
       }
+    },
+    setFormat(next12) {
+      labelFormat = next12;
+      for (let h = 0; h < 24; h++) hourLabels[h].textContent = formatHourLabel(h, labelFormat);
     },
   };
 }
@@ -249,7 +276,7 @@ function renderOverlap() {
 
     const when = document.createElement('span');
     when.className = 'best-when';
-    when.textContent = formatRun(run.start, run.length);
+    when.textContent = formatRun(run.start, run.length, use12);
 
     const who = document.createElement('span');
     who.className = 'best-who';
@@ -300,8 +327,8 @@ async function openGroup(code) {
 
   show('group');
 
-  state.mineGrid = buildGrid($('grid-mine'), { interactive: true });
-  state.allGrid = buildGrid($('grid-all'), { interactive: false });
+  state.mineGrid = buildGrid($('grid-mine'), { interactive: true, use12 });
+  state.allGrid = buildGrid($('grid-all'), { interactive: false, use12 });
 
   if (state.me) {
     $('me-name').value = state.me.n;
@@ -413,6 +440,15 @@ $('join-form').addEventListener('submit', (e) => {
   }
   showError('home-error', '');
   location.hash = `#/${code}`;
+});
+
+$('format-toggle').checked = use12;
+$('format-toggle').addEventListener('change', (e) => {
+  use12 = e.target.checked;
+  saveUse12(use12);
+  if (state.mineGrid) state.mineGrid.setFormat(use12);
+  if (state.allGrid) state.allGrid.setFormat(use12);
+  if (!$('pane-all').hidden) renderOverlap();
 });
 
 $('save').addEventListener('click', save);
